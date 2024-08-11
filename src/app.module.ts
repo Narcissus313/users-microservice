@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { UsersModule } from './users/users.microservice.module';
 import { UserEntity } from './users/user.enitity';
 import { TypeOrmModule } from '@nestjs/typeorm';
-// import { ConfigModule } from '@nestjs/config';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
@@ -10,11 +9,11 @@ import { ConfigModule } from '@nestjs/config';
     ConfigModule.forRoot({ envFilePath: '.env.development.local' }),
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: process.env.DB_HOST,
-      port: parseInt(process.env.DB_PORT, 10),
-      database: process.env.DB_NAME,
-      username: process.env.DB_USERNAME,
-      password: process.env.DB_PASSWORD,
+      host: 'mysql_db',
+      port: 3308,
+      database: 'task_db',
+      username: 'root',
+      password: 'reza1',
       entities: [UserEntity],
       synchronize: true,
     }),

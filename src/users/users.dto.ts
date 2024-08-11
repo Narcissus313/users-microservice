@@ -3,6 +3,11 @@ export class CreateNewUserDto {
 
   password: string;
 }
+export class UpdateUserDto {
+  email: string;
+
+  password: string;
+}
 
 export class LoginDto {
   email: string;

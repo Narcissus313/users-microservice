@@ -1,7 +1,8 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
-import { CreateNewUserDto } from './users.dto';
+import { CreateNewUserDto, UpdateUserDto } from './users.dto';
 import { UsersMicroserviceService } from './user.microservice.service';
+import { ApiResponse } from 'api.response';
 
 @Controller()
 export class UsersMicroserviceController {
@@ -12,11 +13,35 @@ export class UsersMicroserviceController {
     const { email } = createNewUserInfo;
     const userExists =
       await this.usersMicroserviceService.findUserByEmail(email);
-    if (!!userExists) return 'email is already registered';
+    if (!!userExists)
+      return new ApiResponse('fail', 409, 'user is already registered', null);
 
     const newUser =
       await this.usersMicroserviceService.createNewUser(createNewUserInfo);
-    return newUser;
+
+    const { password, ...rest } = newUser;
+    return new ApiResponse('success', 201, 'user created successfully', rest);
+  }
+
+  @MessagePattern({ cmd: 'updateUserPassword' })
+  async updateUser(@Payload() upateUserCredentials: UpdateUserDto) {
+    const { email } = upateUserCredentials;
+    const userExists =
+      await this.usersMicroserviceService.findUserByEmail(email);
+    if (!userExists)
+      return new ApiResponse('fail', 400, "user doesn'nt exist", null);
+
+    const updatedUser =
+      await this.usersMicroserviceService.updateUser(upateUserCredentials);
+
+    const { password, ...rest } = updatedUser;
+
+    return new ApiResponse(
+      'success',
+      201,
+      'user password updated successfully',
+      rest,
+    );
   }
 
   @MessagePattern({ cmd: 'checkUserExistance' })
